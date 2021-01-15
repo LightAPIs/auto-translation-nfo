@@ -36,24 +36,28 @@ class Logger:
             f.write("")
 
         self.logger.setLevel(self.level)
-        handler = logging.FileHandler(file_path)
+        handler = logging.FileHandler(file_path, encoding="utf-8")
         handler.setLevel(self.level)
         handler.setFormatter(
-            logging.Formatter("%(asctime)s %(levelname)s: %(message)s")
-        )
+            logging.Formatter("%(asctime)s %(levelname)s: %(message)s"))
         self.logger.addHandler(handler)
 
     def debug(self, message):
+        print(message)
         self.logger.debug(message)
 
     def info(self, message):
+        print(message)
         self.logger.info(message)
 
     def warning(self, message):
+        print(message)
         self.logger.warning(message)
 
     def error(self, message):
+        print(message)
         self.logger.error(message)
 
     def critical(self, message):
+        print(message)
         self.logger.critical(message)

@@ -2,11 +2,13 @@
 import os
 import argparse
 import re
+import time
 from xml.etree.ElementTree import ElementTree, Element
 
 from log import Logger
 from config import Config
-from translation import Caiyun
+from translation.caiyun import Caiyun
+from translation.baidu import Baidu
 
 
 def read_nfo(in_path):
@@ -100,17 +102,30 @@ def detect_walk(dir_path, hyphen, log, no_add):
         level = "ERROR"
     xlog = Logger(level, "log")
     config = Config()
-    caiyun_token = config.caiyun_token()
-    if caiyun_token:
-        xlog.debug("彩云小译访问令牌：" + caiyun_token)
-        caiyun = Caiyun(caiyun_token)
+    engine_type = config.engine_type()
+    has_engine = False
+    engine = False
+    if engine_type == "baidu":
+        baidu_app_id = config.baidu_app_id()
+        baidu_key = config.baidu_key()
+        if baidu_app_id and baidu_key:
+            has_engine = True
+            engine = Baidu(baidu_app_id, baidu_key)
+    elif engine_type == "caiyun":
+        caiyun_token = config.caiyun_token()
+        if caiyun_token:
+            has_engine = True
+            engine = Caiyun(caiyun_token)
+    if has_engine:
+        xlog.debug("翻译引擎: " + engine_type)
 
         for root, _dirs, files in os.walk(dir_path):
             for filename in files:
                 file = root + "\\" + filename
                 file_ext = os.path.splitext(file)[1]
                 if file_ext in [".nfo"]:
-                    print("处理 " + file)
+                    xlog.info(
+                        "++++++++++++++++++++++++++++++++++++++++++++++++")
                     xlog.info("读取 " + file)
                     tree = read_nfo(file)
 
@@ -121,7 +136,7 @@ def detect_walk(dir_path, hyphen, log, no_add):
                         xlog.info("跳过 " + file)
                         break
                     else:
-                        xlog.info("翻译 " + file)
+                        xlog.info("处理 " + file)
                         trans = True
 
                     title_list = find_nodes(tree, "title")
@@ -134,42 +149,42 @@ def detect_walk(dir_path, hyphen, log, no_add):
                             ex_title = extract_list["title"]
                             if hyphen:
                                 ex_title = re.sub(r"-", " ", ex_title)
-                            if caiyun_token:
-                                trans_title = caiyun.translate(
-                                    ex_title, "ja2zh")
-                                new_title = ex_num + " " + trans_title
-                                change_node_text(title_list[0], new_title)
-                                xlog.info("新标题: " + new_title)
 
-                                if not no_add:
-                                    tree_root = tree.getroot()
-                                    original_node = create_node(
-                                        "originaltitle", {},
-                                        ex_num + " " + ex_title)
-                                    add_child_node(tree_root, original_node)
-                                    xlog.info("注入原始标题节点")
+                            time.sleep(1)
+                            trans_title = engine.translate(ex_title)
+                            new_title = ex_num + " " + trans_title
+                            change_node_text(title_list[0], new_title)
+                            xlog.info("新标题: " + new_title)
+
+                            if not no_add:
+                                tree_root = tree.getroot()
+                                original_node = create_node(
+                                    "originaltitle", {},
+                                    ex_num + " " + ex_title)
+                                add_child_node(tree_root, original_node)
+                                xlog.info("注入原始标题节点")
 
                     plot_list = find_nodes(tree, "plot")
                     if len(plot_list) > 0:
                         plot_text = str(plot_list[0].text)
                         if plot_text != "None":
                             xlog.info("原情节: " + plot_text)
-                            if caiyun_token:
-                                trans_plot = caiyun.translate(
-                                    plot_text, "ja2zh")
-                                change_node_text(plot_list[0], trans_plot)
-                                xlog.info("新情节: " + trans_plot)
+                            time.sleep(1)
+                            trans_plot = engine.translate(plot_text)
+                            change_node_text(plot_list[0], trans_plot)
+                            xlog.info("新情节: " + trans_plot)
 
                     if trans:
                         xlog.info("重新写入 " + file)
+                        xlog.info(
+                            "------------------------------------------------")
                         write_nfo(tree, file)
     else:
-        print("无 token")
-        xlog.error("没有找到彩支小译访问令牌")
+        xlog.error("没有设置翻译引擎")
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description="Auto translate nfo file.")
+    ap = argparse.ArgumentParser(description="自动翻译 nfo 文件")
     ap.add_argument("-i", "--input", required=True, help="输入工作目录的路径")
     ap.add_argument("-y",
                     "--hyphen",
