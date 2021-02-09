@@ -206,6 +206,7 @@ def detect_walk(dir_path, hyphen, log, no_add, tag):
                                         xlog.info("删除风格: '" + del_tag + "'")
                                         is_del = True
                                         mod = True
+                                        break
 
                                 if not is_del:
                                     for rep_tag in tag_data["replace"]:
@@ -218,6 +219,7 @@ def detect_walk(dir_path, hyphen, log, no_add, tag):
                                                       "' ==> '" +
                                                       rep_tag["result"] + "'")
                                             mod = True
+                                            break
 
                         tag_list = find_nodes(tree, "tag")
                         if len(tag_list) > 0:
@@ -229,6 +231,7 @@ def detect_walk(dir_path, hyphen, log, no_add, tag):
                                         xlog.info("删除标签: '" + del_tag + "'")
                                         is_del = True
                                         mod = True
+                                        break
 
                                 if not is_del:
                                     for rep_tag in tag_data["replace"]:
@@ -240,6 +243,7 @@ def detect_walk(dir_path, hyphen, log, no_add, tag):
                                                       "' ==> '" +
                                                       rep_tag["result"] + "'")
                                             mod = True
+                                            break
 
                         studio_list = find_nodes(tree, "studio")
                         if len(studio_list) > 0:
@@ -251,6 +255,7 @@ def detect_walk(dir_path, hyphen, log, no_add, tag):
                                         xlog.info("删除工作室: '" + del_tag + "'")
                                         is_del = True
                                         mod = True
+                                        break
 
                                 if not is_del:
                                     for rep_tag in tag_data["replace"]:
@@ -263,6 +268,7 @@ def detect_walk(dir_path, hyphen, log, no_add, tag):
                                                       "' ==> '" +
                                                       rep_tag["result"] + "'")
                                             mod = True
+                                            break
 
                         maker_list = find_nodes(tree, "maker")
                         if len(maker_list) > 0:
@@ -274,6 +280,7 @@ def detect_walk(dir_path, hyphen, log, no_add, tag):
                                         xlog.info("删除制造商: '" + del_tag + "'")
                                         is_del = True
                                         mod = True
+                                        break
 
                                 if not is_del:
                                     for rep_tag in tag_data["replace"]:
@@ -286,6 +293,7 @@ def detect_walk(dir_path, hyphen, log, no_add, tag):
                                                       "' ==> '" +
                                                       rep_tag["result"] + "'")
                                             mod = True
+                                            break
 
                         # 处理重复元素
                         genre_list = find_nodes(tree, "genre")
