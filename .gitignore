@@ -25,4 +25,6 @@ pnpm-debug.log*
 log
 log.txt
 config.ini
+tag.json
+*.bat
 __pycache__
