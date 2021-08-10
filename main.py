@@ -111,14 +111,17 @@ def detect_walk(dir_path, elements, log, tag):
         if engine_type == "baidu":
             baidu_app_id = config.baidu_app_id()
             baidu_key = config.baidu_key()
+            baidu_from = config.baidu_from()
+            baidu_to = config.baidu_to()
             if baidu_app_id and baidu_key:
                 has_engine = True
-                engine = Baidu(baidu_app_id, baidu_key)
+                engine = Baidu(baidu_app_id, baidu_key, baidu_from, baidu_to)
         elif engine_type == "caiyun":
             caiyun_token = config.caiyun_token()
+            caiyun_trans_type = config.caiyun_trans_type()
             if caiyun_token:
                 has_engine = True
-                engine = Caiyun(caiyun_token)
+                engine = Caiyun(caiyun_token, caiyun_trans_type)
 
         tag = Tag()
         tag_data = tag.handler()

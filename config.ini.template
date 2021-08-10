@@ -3,10 +3,19 @@
 type=baidu
 
 ; 彩云小译访问令牌
+; 彩云小译 API 获取见: https://fanyi.caiyunapp.com/#/api
 [caiyun]
 token=
+; 支持的语言见: https://fanyi.caiyunapp.com/#/api
+trans_type=auto2zh
+
 
 ; 百度 API
+: 通用翻译 API 获取见: http://api.fanyi.baidu.com/api/trans/product/prodinfo
 [baidu]
 app_id=
 key=
+; 翻译语种
+; 语种列表见: http://api.fanyi.baidu.com/doc/21
+from=auto
+to=zh

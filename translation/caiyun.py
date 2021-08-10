@@ -4,15 +4,16 @@ import json
 
 
 class Caiyun:
-    def __init__(self, token=""):
+    def __init__(self, token="", trans_type=""):
         self.url = "http://api.interpreter.caiyunai.com/v1/translator"
         self.token = token
+        self.trans_type = trans_type
 
     def translate(self, content):
         try:
             payload = {
                 "source": [content],
-                "trans_type": "ja2zh",
+                "trans_type": self.trans_type,
                 "request_id": "translate_nfo",
             }
 

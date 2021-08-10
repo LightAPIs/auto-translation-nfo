@@ -5,10 +5,12 @@ import requests
 
 
 class Baidu:
-    def __init__(self, app_id="", key=""):
+    def __init__(self, app_id="", key="", from_value="", to=""):
         self.url = "https://fanyi-api.baidu.com/api/trans/vip/translate"
         self.app_id = str(app_id)
         self.key = key
+        self.from_value = from_value
+        self.to = to
 
     def translate(self, content: str):
         salt = str(random.randint(32768, 65536))
@@ -17,8 +19,8 @@ class Baidu:
         sign = hashlib.md5(pre_sign.encode()).hexdigest()
         params = {
             "q": query_str,
-            "from": "jp",
-            "to": "zh",
+            "from": self.from_value,
+            "to": self.to,
             "appid": self.app_id,
             "salt": salt,
             "sign": sign
