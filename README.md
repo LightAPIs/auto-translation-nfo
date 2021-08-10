@@ -2,7 +2,7 @@
 
 ## 配置方法
 
-1. 前往 [Releases](/releases) 下载压缩包文件
+1. 前往 [Releases](https://github.com/LightAPIs/auto-translation-nfo/releases) 下载压缩包文件
 2. 解压得到 `main.exe` 和 `config.ini` 两个文件
 3. 编辑 `config.ini` 添加相应的访问令牌和翻译语种，具体见文件内部说明(目前支持彩云小译及百度翻译)
 
