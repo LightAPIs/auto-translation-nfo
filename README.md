@@ -26,7 +26,7 @@ main.exe [-h] -i INPUT -e ELEMENTS [-l {error,all,none}] [-t]
 ```bat
 @echo off
 echo 处理 temp 文件夹；翻译 title 和 originaltitle 节点
-main.py -i "d:\temp" -e "title|originaltitle"
+main.exe -i "d:\temp" -e "title|originaltitle"
 echo 运行完成，按下任意键退出
 pause>NUL
 exit
