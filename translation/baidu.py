@@ -2,6 +2,7 @@
 import hashlib
 import random
 import requests
+import re
 
 
 class Baidu:
@@ -14,7 +15,7 @@ class Baidu:
 
     def translate(self, content: str):
         salt = str(random.randint(32768, 65536))
-        query_str = content.replace(" ", "+")
+        query_str = self._convert_space(content)
         pre_sign = self.app_id + query_str + salt + self.key
         sign = hashlib.md5(pre_sign.encode()).hexdigest()
         params = {
@@ -30,8 +31,12 @@ class Baidu:
             reponse = requests.get(self.url, params=params)
             result_dict = reponse.json()
             if "trans_result" in result_dict:
-                return (result_dict["trans_result"][0]["dst"]).replace(
-                    "+", " ")
+                result = ""
+                for dict in result_dict["trans_result"]:
+                    result += "\n" + \
+                        self._remove_space(
+                            dict["dst"]) if result else self._remove_space(dict["dst"])
+                return result
             else:
                 return content
         except ValueError:
@@ -42,3 +47,19 @@ class Baidu:
         m = hashlib.md5()
         m.update(str)
         return m.hexdigest()
+
+    @staticmethod
+    def _remove_space(str):
+        s = str.replace("+", " ")
+        space_patten = re.compile(r"([\u4e00-\u9fa5])\s+([\u4e00-\u9fa5])")
+        s = space_patten.sub(r"\1\2", s)
+        s = space_patten.sub(r"\1\2", s)
+        return s
+
+    @staticmethod
+    def _convert_space(str):
+        suffix_patten = re.compile(r"([\u4e00-\u9fa5])\s+")
+        s = suffix_patten.sub(r"\1+", str)
+        prefix_patten = re.compile(r"\s+([\u4e00-\u9fa5])")
+        s = prefix_patten.sub(r"+\1", s)
+        return s
