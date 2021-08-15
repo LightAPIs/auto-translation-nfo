@@ -2,6 +2,7 @@
 import os
 import argparse
 import time
+import shutil
 from xml.etree.ElementTree import ElementTree, Element
 
 from log import Logger
@@ -23,6 +24,22 @@ def read_nfo(in_path):
     tree = ElementTree()
     tree.parse(in_path)
     return tree
+
+
+def backup_file(in_path):
+    backup_status = False
+    dir_path = os.path.join(os.getcwd(), "backup")
+    if (not os.path.exists(dir_path)):
+        os.makedirs(dir_path)
+    if os.path.exists(in_path):
+        try:
+            shutil.copy(in_path, dir_path)
+            backup_status = True
+        except IOError as e:
+            backup_status = False
+            print("存在权限问题，复制文件失败！ %s" % e)
+
+    return backup_status
 
 
 def write_nfo(tree, out_path):
@@ -86,7 +103,7 @@ def dir_empty(dir_path):
     return dirStatus
 
 
-def detect_walk(dir_path, elements, log, tag):
+def detect_walk(dir_path, elements, log, backup, tag):
     level = "ERROR"
     if log == "all":
         level = "DEBUG"
@@ -100,6 +117,7 @@ def detect_walk(dir_path, elements, log, tag):
     xlog.debug("工作目录: " + dir_path)
     xlog.debug("处理元素节点: " + str(elements))
     xlog.debug("日志级别: " + log)
+    xlog.debug("自动备份: " + str(backup))
     xlog.debug("替换标签: " + str(tag))
     xlog.debug("************************************************")
 
@@ -136,20 +154,28 @@ def detect_walk(dir_path, elements, log, tag):
                     if file_ext in [".nfo"]:
                         xlog.info(
                             "++++++++++++++++++++++++++++++++++++++++++++++++")
+                        if backup:
+                            if backup_file(file):
+                                xlog.info("备份 " + file)
+                            else:
+                                xlog.error("备份失败: " + file)
                         xlog.info("读取 " + file)
                         tree = read_nfo(file)
                         mod = False
 
                         for ele in elements:
-                            ele_list = find_nodes(tree, ele)
+                            ele_name = ele.strip()
+                            ele_list = find_nodes(tree, ele_name)
                             if len(ele_list) > 0:
                                 ele_text = str(ele_list[0].text)
                                 if ele_text != "None":
-                                    xlog.info("原 " + ele + ": " + ele_text)
+                                    xlog.info("原 " + ele_name + ": " +
+                                              ele_text)
                                     time.sleep(1)
                                     trans_ele = engine.translate(ele_text)
                                     change_node_text(ele_list[0], trans_ele)
-                                    xlog.info("新 " + ele + ": " + trans_ele)
+                                    xlog.info("新 " + ele_name + ": " +
+                                              trans_ele)
                                     mod = True
 
                         if tag:
@@ -315,10 +341,8 @@ def detect_walk(dir_path, elements, log, tag):
 
                         if mod:
                             xlog.info("重新写入 " + file)
-                            xlog.info(
-                                "------------------------"
-                                "------------------------"
-                            )
+                            xlog.info("------------------------"
+                                      "------------------------")
                             write_nfo(tree, file)
 
             xlog.debug("所有操作处理完成。")
@@ -344,6 +368,11 @@ if __name__ == "__main__":
         required=False,
         help="打印日志级别",
     )
+    ap.add_argument("-b",
+                    "--backup",
+                    action="store_true",
+                    required=False,
+                    help="翻译前备份原文件")
     ap.add_argument("-t",
                     "--tag",
                     action="store_true",
@@ -354,7 +383,8 @@ if __name__ == "__main__":
     dir_path = args["input"]
     elements = args["elements"].split("|")
     log = args["log"]
+    backup = args["backup"]
     tag = args["tag"]
     if os.path.isdir(dir_path):
         if not dir_empty(dir_path):
-            detect_walk(dir_path, elements, log, tag)
+            detect_walk(dir_path, elements, log, backup, tag)
