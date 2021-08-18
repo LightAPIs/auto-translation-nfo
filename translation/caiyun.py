@@ -15,6 +15,7 @@ class Caiyun:
                 "source": [content],
                 "trans_type": self.trans_type,
                 "request_id": "translate_nfo",
+                "detect": True,
             }
 
             headers = {

@@ -7,8 +7,7 @@ type=baidu
 [caiyun]
 token=
 ; 支持的语言见: https://fanyi.caiyunapp.com/#/api
-; 若待翻译内容中混合了多种语言，建议采用百度翻译效果会更好
-trans_type=en2zh
+trans_type=auto2zh
 
 
 ; 百度 API
